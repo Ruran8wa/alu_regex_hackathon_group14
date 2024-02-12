@@ -48,7 +48,10 @@
           .then((response) => response.json())
           .then((data) => {
             jokeData = data;
-            jokeSetupElement.textContent = jokeData.setup;
+            const setup = jokeData.setup.replace(/&quot;/g, '"');
+            const punchline = jokeData.punchline.replace(/&quot;/g, '"');
+            jokeSetupElement.textContent = setup;
+            jokePunchlineElement.textContent = punchline;
             punchlineShown = false;
             fetchJokeBtn.textContent = "Tell Me";
           })
@@ -57,7 +60,6 @@
 
       function showPunchline() {
         if (jokeData && !punchlineShown) {
-          jokePunchlineElement.textContent = jokeData.punchline;
           jokePunchlineElement.style.display = "block";
           punchlineShown = true;
           fetchJokeBtn.textContent = "Tell Me Another";
