@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dad Joke Generator</title>
+    <title>Joke Generator</title>
     <link rel="stylesheet" href="jokes.css" />
   </head>
   <body>
-    <h1 id="title">Joke Generator</h1>
+    <h1 class="title">Joke Generator</h1>
     <div class="container">
       <div class="joke-container">
         <div class="joke">
@@ -27,6 +27,8 @@
       const jokePunchlineElement = document.getElementById("joke-punchline");
       const fetchJokeBtn = document.getElementById("fetch-joke-btn");
 
+      const jokePattern = /Why did the .+? Because.+/;
+
       let jokeData = null;
       let punchlineShown = false;
 
@@ -44,22 +46,25 @@
         jokeSetupElement.textContent = "Loading...";
         jokePunchlineElement.style.display = "none";
 
-        fetch("https://official-joke-api.appspot.com/random_joke")
+        fetch("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw&type=single")
           .then((response) => response.json())
           .then((data) => {
-            jokeData = data;
-            const setup = jokeData.setup.replace(/&quot;/g, '"');
-            const punchline = jokeData.punchline.replace(/&quot;/g, '"');
-            jokeSetupElement.textContent = setup;
-            jokePunchlineElement.textContent = punchline;
-            punchlineShown = false;
-            fetchJokeBtn.textContent = "Tell Me";
+            const setup = data.joke;
+            if (jokePattern.test(setup)) {
+              jokeData = data;
+              jokeSetupElement.textContent = setup;
+              punchlineShown = false;
+              fetchJokeBtn.textContent = "Tell Me";
+            } else {
+              fetchJoke();
+            }
           })
           .catch((error) => console.error("Error fetching joke:", error));
       }
 
       function showPunchline() {
         if (jokeData && !punchlineShown) {
+          jokePunchlineElement.textContent = jokeData.answer;
           jokePunchlineElement.style.display = "block";
           punchlineShown = true;
           fetchJokeBtn.textContent = "Tell Me Another";
