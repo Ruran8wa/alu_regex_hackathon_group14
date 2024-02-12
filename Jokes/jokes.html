@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dad Joke Generator</title>
+    <link rel="stylesheet" href="jokes.css" />
+  </head>
+  <body>
+    <h1 id="title">Joke Generator</h1>
+    <div class="container">
+      <div class="joke-container">
+        <div class="joke">
+          <p id="joke-setup" class="joke-setup">Loading...</p>
+          <p
+            id="joke-punchline"
+            class="joke-punchline"
+            style="display: none"
+          ></p>
+        </div>
+        <button id="fetch-joke-btn" class="fetch-joke-btn">Tell Me</button>
+      </div>
+    </div>
+
+    <script>
+      const jokeSetupElement = document.getElementById("joke-setup");
+      const jokePunchlineElement = document.getElementById("joke-punchline");
+      const fetchJokeBtn = document.getElementById("fetch-joke-btn");
+
+      let jokeData = null;
+      let punchlineShown = false;
+
+      fetchJoke();
+
+      fetchJokeBtn.addEventListener("click", () => {
+        if (!punchlineShown) {
+          showPunchline();
+        } else {
+          fetchJoke();
+        }
+      });
+
+      function fetchJoke() {
+        jokeSetupElement.textContent = "Loading...";
+        jokePunchlineElement.style.display = "none";
+
+        fetch("https://official-joke-api.appspot.com/random_joke")
+          .then((response) => response.json())
+          .then((data) => {
+            jokeData = data;
+            jokeSetupElement.textContent = jokeData.setup;
+            punchlineShown = false;
+            fetchJokeBtn.textContent = "Tell Me";
+          })
+          .catch((error) => console.error("Error fetching joke:", error));
+      }
+
+      function showPunchline() {
+        if (jokeData && !punchlineShown) {
+          jokePunchlineElement.textContent = jokeData.punchline;
+          jokePunchlineElement.style.display = "block";
+          punchlineShown = true;
+          fetchJokeBtn.textContent = "Tell Me Another";
+        }
+      }
+    </script>
+  </body>
+</html>
